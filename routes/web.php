@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\HistoriesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
@@ -35,6 +36,11 @@ Route::middleware('auth')->group(function () {
 
         // Ticket Management
         Route::resource('tickets', TiketController::class);
+
+        // Histories
+        Route::get('/histories', [HistoriesController::class, 'index'])->name('histories.index');
+        Route::get('/histories/{id}', [HistoriesController::class, 'show'])->name('histories.show');
+
     });
 });
 
