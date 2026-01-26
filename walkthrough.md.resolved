@@ -1,0 +1,76 @@
+# Panduan Menjalankan dengan Laravel Herd
+
+Sangat bisa! Menggunakan **Laravel Herd** justru adalah cara **paling mudah** dan direkomendasikan untuk pengguna macOS.
+
+## 1. Prasyarat
+Pastikan Anda sudah menginstall:
+-   **Laravel Herd**: [https://herd.laravel.com](https://herd.laravel.com)
+-   **DBngin** (atau database manager lain) untuk MySQL-nya.
+    *   *Herd versi Free tidak include service database, jadi pakai DBngin (gratis juga) adalah pasangan terbaiknya.*
+
+## 2. Cara Setup di Herd
+
+### Langkah 1: Deteksi Project
+1.  Buka **Herd**.
+2.  Pastikan folder tempat Anda menyimpan project ini (`/Users/mymac/Documents/Code/ticketing-app`) sudah masuk dalam "Parked Paths" di Herd.
+    *   Jika belum, buka Settings Herd -> General -> Paths, lalu tambahkan folder induknya (`/Users/mymac/Documents/Code`).
+3.  Herd akan otomatis mendeteksi project dan membuatkan domain lokal, misalnya: `ticketing-app.test`.
+
+### Langkah 2: Setup Database
+1.  Buka **DBngin** (atau aplikasi database Anda).
+2.  Start service MySQL.
+3.  Buat database baru bernama `ticketing_db`.
+    *   Bisa pakai TablePlus (biasanya include di DBngin) atau phpMyAdmin.
+4.  Duplikat file `.env.example` jadi `.env`.
+5.  Edit file `.env` untuk konek ke database lokal Anda:
+    ```ini
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=ticketing_db
+    DB_USERNAME=root
+    DB_PASSWORD=          # Sesuaikan, biasanya default DBngin itu root & kosong
+    ```
+
+### Langkah 3: Install & Setup (via Terminal)
+Meskipun pakai Herd, kita tetap butuh terminal untuk setup awal libraries. Buka terminal di folder project, lalu jalankan:
+
+```bash
+# Install library PHP & JS
+composer install
+npm install
+
+# Generate key & Build Frontend
+php artisan key:generate
+npm run build
+
+# Setup Database & User Default
+php artisan migrate --seed
+```
+
+### Langkah 4: Selesai!
+Sekarang buka browser dan akses:
+[http://ticketing-app.test](http://ticketing-app.test)
+
+(Sesuaikan dengan nama folder Anda, Herd otomatis pakai `nama-folder.test`)
+
+## 3. Akun Login Default
+Data ini diambil dari `UserSeeder.php`:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@gmail.com` | `password` |
+| **User** | `user@gmail.com` | `password` |
+
+---
+
+## 4. Hasil Audit (Ringkasan)
+
+Aplikasi ini sudah **sangat baik** secara struktur dan keamanan:
+
+1.  **Keamanan Role**: Sudah ada pemisahan jelas antara Admin dan User menggunakan Middleware (`AdminMiddleware.php`).
+2.  **Concurrency (Stok Tiket)**: Logika pembelian tiket di `OrderController.php` sangat bagus. Menggunakan fitur `LOCK` database, sehingga tidak akan terjadi stok minus meskipun banyak orang beli bersamaan.
+3.  **Struktur Kode**: Rapih standar Laravel modern (versi 11/12).
+4.  **Validasi**: Input user divalidasi dengan baik untuk mencegah error atau manipulasi data.
+
+Kesimpulan: **Project ini siap dipakai (production-ready).**
